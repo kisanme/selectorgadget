@@ -6939,7 +6939,7 @@ function diff_match_patch(){this.Diff_Timeout=1.0;this.Diff_EditCost=4;this.Diff
         try {
           return name.replace(/\bselectorgadget_\w+\b/g, '').replace(/\\/g, '\\\\').replace(/[\#\;\&\,\.\+\*\~\'\:\"\!\^\$\[\]\(\)\=\>\|\/]/g, function(e) {
             return '\\' + e;
-          }).replace(/\s+/, '');
+          }).replace(/%/g, "\\\\%").replace(/\s+/, '');
         } catch (e) {
           if (window.console) {
             console.log('---');
@@ -6996,7 +6996,7 @@ function diff_match_patch(){this.Diff_Timeout=1.0;this.Diff_EditCost=4;this.Diff
               if (siblings[j] === e) {
                 break;
               }
-              if (!siblings[j].nodeName.match(/^(script|#.*?)$/i)) {
+              if (!siblings[j].nodeName.match(/^(script|code|#.*?)$/i)) {
                 path += this.cssDescriptor(siblings[j]) + (j + 1 === siblings.length ? "+ " : "~ ");
               }
               j++;
@@ -7026,7 +7026,9 @@ function diff_match_patch(){this.Diff_Timeout=1.0;this.Diff_EditCost=4;this.Diff
         }
       }
       if (node.nodeName.toLowerCase() !== "body") {
-        path += ':nth-child(' + (this.childElemNumber(node) + 1) + ')';
+				if ( node.nodeName.toLowerCase() !== "img" ) {
+					path += ':nth-child(' + (this.childElemNumber(node) + 1) + ')';
+				}
       }
       return path;
     };
@@ -7195,45 +7197,66 @@ function diff_match_patch(){this.Diff_Timeout=1.0;this.Diff_EditCost=4;this.Diff
     };
 
     DomPredictionHelper.prototype.simplifyCss = function(css, selected, rejected) {
+      console.log('SIMPLIFY CSS', css, selected, rejected)
       var best_so_far, first, got_shorter, i, look_back_index, ordering, part, parts, priorities, second, selector, _i, _ref,
         _this = this;
       parts = this.tokenizeCss(css);
+      console.log('PARTS', parts)
       priorities = this.tokenPriorities(parts);
+      console.log('PRIORITIES', priorities)
       ordering = this.orderFromPriorities(priorities);
+      console.log('ORDERING', ordering)
       selector = this.cleanCss(css);
+      console.log('SELECTOR', selector)
       look_back_index = -1;
+      console.log('LOOK BACK INDEX', look_back_index)
       best_so_far = "";
+      console.log('BEST SO FAR', best_so_far)
       if (this.selectorGets('all', selected, selector) && this.selectorGets('none', rejected, selector)) {
         best_so_far = selector;
       }
+      console.log('BEST SO FAR 1', best_so_far)
       got_shorter = true;
       while (got_shorter) {
         got_shorter = false;
         for (i = _i = 0, _ref = parts.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
-          part = ordering[i];
+		  part = ordering[i];
+		  console.log('part', part)
           if (parts[part].length === 0) {
             continue;
           }
           first = parts[part].substring(0, 1);
+		  console.log('first', first)
           second = parts[part].substring(1, 2);
+		  console.log('second', second)
           if (first === ' ') {
             continue;
           }
           if (this.wouldLeaveFreeFloatingNthChild(parts, part)) {
+			console.log('wouldLeaveFreeFloatingNthChild', parts, part)
             continue;
           }
           this._removeElements(part, parts, first, function(selector) {
+			console.log('removeElementsCB')
             if (_this.selectorGets('all', selected, selector) && _this.selectorGets('none', rejected, selector) && (selector.length < best_so_far.length || best_so_far.length === 0)) {
+			  console.log('withinIF', 'selector', selector)
               best_so_far = selector;
+			  console.log('best_so_far', best_so_far)
               got_shorter = true;
+			  console.log('got_shorter', got_shorter)
+			  console.log('returnTrue')
               return true;
             } else {
+			  console.log('returnFalse')
               return false;
             }
           });
         }
       }
-      return this.cleanCss(best_so_far);
+	  console.log('BEST SO FAR POST LOOP', best_so_far)
+	  var cleanedClass = this.cleanCss(best_so_far);
+      console.log('cleanedClass', cleanedClass)
+      return cleanedClass
     };
 
     DomPredictionHelper.prototype._removeElements = function(part, parts, firstChar, callback) {
@@ -7316,10 +7339,13 @@ function diff_match_patch(){this.Diff_Timeout=1.0;this.Diff_EditCost=4;this.Diff
       if (s.length === 0) {
         return '';
       }
-      selected_paths = this.getPathsFor(s);
+			selected_paths = this.getPathsFor(s);
+			console.log('SELECTED PATHS', selected_paths)
       css = this.cssDiff(selected_paths);
-      simplest = this.simplifyCss(css, s, r);
-      if (simplest.length > 0) {
+			console.log('CSS', css)
+			simplest = this.simplifyCss(css, s, r);
+			console.log('SIMPLEST', simplest)
+			if (simplest.length > 0) {
         return simplest;
       }
       union = '';
@@ -7327,8 +7353,10 @@ function diff_match_patch(){this.Diff_Timeout=1.0;this.Diff_EditCost=4;this.Diff
         selected = s[_i];
         union = this.pathOf(selected) + ", " + union;
       }
-      union = this.cleanCss(union);
-      return this.simplifyCss(union, s, r);
+			console.log('UNION', union)
+			union = this.cleanCss(union);
+			console.log('UNION POST', union)
+			return this.simplifyCss(union, s, r);
     };
 
     DomPredictionHelper.prototype.selectorGets = function(type, list, the_selector) {
@@ -7750,7 +7778,8 @@ function diff_match_patch(){this.Diff_Timeout=1.0;this.Diff_EditCost=4;this.Diff
         gadget.selected.push(elem);
       }
       gadget.clearSuggested();
-      prediction = gadget.prediction_helper.predictCss(jQuerySG(gadget.selected), jQuerySG(gadget.rejected.concat(gadget.restricted_elements)));
+			prediction = gadget.prediction_helper.predictCss(jQuerySG(gadget.selected), jQuerySG(gadget.rejected.concat(gadget.restricted_elements)));
+			console.log('PREDICTION', prediction)
       gadget.suggestPredicted(prediction);
       gadget.setPath(prediction);
       gadget.removeBorders();

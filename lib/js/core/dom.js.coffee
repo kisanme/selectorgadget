@@ -37,7 +37,8 @@ window.DomPredictionHelper = class DomPredictionHelper
     if name
       try
         name.replace(/\bselectorgadget_\w+\b/g, '').replace(/\\/g, '\\\\').
-             replace(/[\#\;\&\,\.\+\*\~\'\:\"\!\^\$\[\]\(\)\=\>\|\/]/g, (e) -> '\\' + e).replace(/\s+/, '')
+             replace(/[\#\;\&\,\.\+\*\~\'\:\"\!\^\$\[\]\(\)\=\>\|\/]/g, (e) -> '\\' + e).replace(/\s+/, '').
+             replace(/%/g, "\\\\%")
       catch e
         if window.console
           console.log('---');
@@ -73,7 +74,7 @@ window.DomPredictionHelper = class DomPredictionHelper
           j = if siblings.length - 2 < 0 then 0 else siblings.length - 2
           while j < siblings.length
             break if siblings[j] == e
-            if !siblings[j].nodeName.match(/^(script|#.*?)$/i)
+            if !siblings[j].nodeName.match(/^(script|code|#.*?)$/i)
               path += @cssDescriptor(siblings[j]) + (if j + 1 == siblings.length then "+ " else "~ ")
             j++
         path += @cssDescriptor(e) + " > "
@@ -210,6 +211,7 @@ window.DomPredictionHelper = class DomPredictionHelper
     ordering;
 
   simplifyCss: (css, selected, rejected) ->
+    console.log('css')
     parts = @tokenizeCss(css)
     priorities = @tokenPriorities(parts)
     ordering = @orderFromPriorities(priorities)

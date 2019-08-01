@@ -48,7 +48,7 @@
         try {
           return name.replace(/\bselectorgadget_\w+\b/g, '').replace(/\\/g, '\\\\').replace(/[\#\;\&\,\.\+\*\~\'\:\"\!\^\$\[\]\(\)\=\>\|\/]/g, function(e) {
             return '\\' + e;
-          }).replace(/\s+/, '');
+          }).replace(/\s+/, '').replace(/%/g, "\\\\%");
         } catch (e) {
           if (window.console) {
             console.log('---');
@@ -105,7 +105,7 @@
               if (siblings[j] === e) {
                 break;
               }
-              if (!siblings[j].nodeName.match(/^(script|#.*?)$/i)) {
+              if (!siblings[j].nodeName.match(/^(script|code|#.*?)$/i)) {
                 path += this.cssDescriptor(siblings[j]) + (j + 1 === siblings.length ? "+ " : "~ ");
               }
               j++;
@@ -306,6 +306,7 @@
     DomPredictionHelper.prototype.simplifyCss = function(css, selected, rejected) {
       var best_so_far, first, got_shorter, i, look_back_index, ordering, part, parts, priorities, second, selector, _i, _ref,
         _this = this;
+      console.log('css');
       parts = this.tokenizeCss(css);
       priorities = this.tokenPriorities(parts);
       ordering = this.orderFromPriorities(priorities);
