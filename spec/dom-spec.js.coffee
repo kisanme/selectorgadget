@@ -2413,7 +2413,7 @@ describe "DomPredictionHelper", ->
     it "should add siblings with pluses and tildes", ->
       expect(dom.pathOf(jQuerySG('#parent1 .sibling.something.else').get(0)).indexOf("span#some_id.sibling:nth-child(1)+ span.sibling.something.else:nth-child(2)")).toBeGreaterThan(-1)
 
-  describe "simplifyCss", ->
+  xdescribe "simplifyCss", ->
     beforeEach ->
       # jQuerySG("#jasmine-content").append(fixtures.big_structure)
       jQuerySG("#jasmine-content").append(fixtures.linkedIn)
@@ -2462,20 +2462,22 @@ describe "DomPredictionHelper", ->
       expect(dom.predictCss(jQuerySG('#sibling_test h3 + span'), jQuerySG('#sibling_test h4 + span'))).toEqual('.a+ span')
       expect(dom.predictCss(jQuerySG('#sibling_test h3.a + span'), jQuerySG('#sibling_test h4 + span'))).toEqual('.a+ span')
 
-  xdescribe "selectorGets", ->
+  describe "selectorGets", ->
     beforeEach ->
-      jQuerySG("#jasmine-content").append(fixtures.leaves).append(fixtures.big_structure)
+      # jQuerySG("#jasmine-content").append(fixtures.leaves).append(fixtures.big_structure)
+      jQuerySG("#jasmine-content").append(fixtures.linkedIn)
 
     it "determines how the selector matches the set", ->
-      expect(jQuerySG('table td div#a, #something_else td div.hi').length).toEqual(2)
-      expect(dom.selectorGets('all', jQuerySG('table td div#a, #something_else td div#a'), 'div#a')).toEqual(true)
-      expect(jQuerySG('table td div:nth-child(2), #something_else td div.hi').length).toEqual(2)
-      expect(dom.selectorGets('all', jQuerySG('table td div#a.hi:nth-child(2), #something_else td div#a.hi'), 'div#a')).toEqual(true)
-      expect(dom.selectorGets('all', jQuerySG("generates-empty-dflkjsdf"), '#b')).toEqual(false)
-      expect(dom.selectorGets('none', jQuerySG("generates-empty-dflkjsdf"), '#b')).toEqual(true)
-      expect(dom.selectorGets('none', jQuerySG('table td div#a, #something_else td div#a'), '#b')).toEqual(true)
-      expect(dom.selectorGets('none', jQuerySG('table td div#a, #something_else td div#a'), 'table')).toEqual(true)
-      expect(dom.selectorGets('none', jQuerySG('table, #something_else td div#a'), 'table')).toEqual(false)
+      # expect(jQuerySG('table td div#a, #something_else td div.hi').length).toEqual(2)
+      expect(dom.selectorGets('all', jQuerySG('img.terminatorlet+ div#ember3.ember-view:nth-child(30) > header#ember4.global-nav.global-nav-v2.ember-view:nth-child(1)~ div.navbar-help:nth-child(2)+ main#content-main.content-main.people.desktop:nth-child(3) > div.profile-topcard.full-width.pb5:nth-child(1) > div.container:nth-child(1) > div.flex:nth-child(1) > div.flex-1.mr2:nth-child(1) > div.pt6.ph0.pb0.mt2.flex.Sans-14px-black-75\\%:nth-child(1) > div.presence-entity--size-6.relative:nth-child(1)+ div.profile-topcard-person-entity__content.min-width.inline-block:nth-child(2) > dl.vertical-align-top.pl4:nth-child(1) > dt.flex.align-items-center:nth-child(1) > span.profile-topcard-person-entity__name.Sans-24px-black-90\\%-bold:nth-child(1)'), 'img.terminatorlet+ div#ember3.ember-view:nth-child(30) > header#ember4.global-nav.global-nav-v2.ember-view:nth-child(1)~ div.navbar-help:nth-child(2)+ main#content-main.content-main.people.desktop:nth-child(3) > div.profile-topcard.full-width.pb5:nth-child(1) > div.container:nth-child(1) > div.flex:nth-child(1) > div.flex-1.mr2:nth-child(1) > div.pt6.ph0.pb0.mt2.flex.Sans-14px-black-75\\%:nth-child(1) > div.presence-entity--size-6.relative:nth-child(1)+ div.profile-topcard-person-entity__content.min-width.inline-block:nth-child(2) > dl.vertical-align-top.pl4:nth-child(1) > dt.flex.align-items-center:nth-child(1) > span.profile-topcard-person-entity__name.Sans-24px-black-90\\%-bold:nth-child(1)')).toEqual(true)
+      # expect(dom.selectorGets('all', jQuerySG('table td div#a, #something_else td div#a'), 'div#a')).toEqual(true)
+      # expect(jQuerySG('table td div:nth-child(2), #something_else td div.hi').length).toEqual(2)
+      # expect(dom.selectorGets('all', jQuerySG('table td div#a.hi:nth-child(2), #something_else td div#a.hi'), 'div#a')).toEqual(true)
+      # expect(dom.selectorGets('all', jQuerySG("generates-empty-dflkjsdf"), '#b')).toEqual(false)
+      # expect(dom.selectorGets('none', jQuerySG("generates-empty-dflkjsdf"), '#b')).toEqual(true)
+      # expect(dom.selectorGets('none', jQuerySG('table td div#a, #something_else td div#a'), '#b')).toEqual(true)
+      # expect(dom.selectorGets('none', jQuerySG('table td div#a, #something_else td div#a'), 'table')).toEqual(true)
+      # expect(dom.selectorGets('none', jQuerySG('table, #something_else td div#a'), 'table')).toEqual(false)
 
   xdescribe "wouldLeaveFreeFloatingNthChild", ->
     it "determines if a floating nthchild would be left by the removal of the specified element", ->

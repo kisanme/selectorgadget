@@ -6925,7 +6925,7 @@ function diff_match_patch(){this.Diff_Timeout=1.0;this.Diff_EditCost=4;this.Diff
 
     DomPredictionHelper.prototype.recursiveNodes = function(e) {
       var n;
-      if (e.nodeName && e.parentNode && e !== document.body) {
+      if (e.nodeName && e.parentNode && e.parentNode !== document.body) {
         n = this.recursiveNodes(e.parentNode);
       } else {
         n = new Array();
@@ -7360,6 +7360,7 @@ function diff_match_patch(){this.Diff_Timeout=1.0;this.Diff_EditCost=4;this.Diff
     };
 
     DomPredictionHelper.prototype.selectorGets = function(type, list, the_selector) {
+			console.log('selectorGets', type, list, the_selector);
       if (list.length === 0 && type === 'all') {
         return false;
       }
@@ -7367,10 +7368,15 @@ function diff_match_patch(){this.Diff_Timeout=1.0;this.Diff_EditCost=4;this.Diff
         return true;
       }
       try {
+				let results;
         if (type === 'all') {
-          return list.not(the_selector).length === 0;
+					results = list.not(the_selector).length === 0;
+					console.log('all results', results)
+          return results
         } else {
-          return !(list.is(the_selector));
+					results = !(list.is(the_selector));
+					console.log('none results', results)
+          return results
         }
       } catch (e) {
         if (window.console) {
